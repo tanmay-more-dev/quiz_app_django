@@ -1,0 +1,83 @@
+{% extends "public/base.html" %}
+{% block main_content %}
+<div class="container p-3">
+    <div id="question-box" class="m-4">
+
+    </div>
+   
+</div>
+<script>
+    var quiz_code = '{{ quiz.code|escapejs }}';
+    const urlParams = new URLSearchParams(window.location.search);
+    var player_name = urlParams.get('name');
+    var url = 'ws://'+window.location.host+'/ws/quiz/'+player_name+'/'+quiz_code+'/';
+    // Establish WebSocket connection
+    const socket = new WebSocket(url);
+
+    // // Event listener for when the connection is open
+    socket.addEventListener('open', function (event) {
+    });
+
+    // // Event listener for when a message is received from the server
+    socket.addEventListener('message', function (event) {
+        data = JSON.parse(event.data);
+        renderMessage(data);
+    });
+
+    // Function to render the received message
+    function renderMessage(message) {
+        if(message.hasOwnProperty('message')){
+            const messageContainer = document.getElementById('question-box');
+            msg = '<div class="alert alert-info" role="alert">'+message.message+'</div>';
+            if(message.hasOwnProperty('score')){
+                scoreCode = '<div class="alert alert-success" role="alert"><p class="text-center"><strong>Your Score</strong></p>';
+                scoreCode += `<p>Total Questions: <strong>${message.score['answered_question']}</strong></p>`;
+                scoreCode += `<p>Correct: <strong>${message.score['correct_answers']}</strong></p>`;
+                scoreCode += `<p>Incorrect: <strong>${message.score['incorrect_answers']}</strong></p>`;
+                scoreCode += '</div>';
+                msg += scoreCode;
+            }
+            messageContainer.innerHTML = msg;
+        }else if(message.hasOwnProperty('question')){
+            var htmlCode = `<input type="hidden" name="question_id" value="${message.question_id}"><div id='question-text' class=''><p class='h3'>${message.question}</p></div>`;
+            for (const key in message.options){
+                if(message.options.hasOwnProperty(key)){
+                        htmlCode += `<input onchange="activateBtn()" type="radio" id="${key}" name="option" value="${key}">&nbsp;<label for="${key}">${message.options[key]}</label><br>`;
+                    }
+            }
+            htmlCode += `<button onclick='submitAnswer()' id="submit-btn" class="btn btn-primary" style="float: right;" disabled>Submit</button>`;
+            const questionContainer = document.getElementById('question-box');
+            questionContainer.innerHTML = htmlCode;
+
+        }
+    }
+
+    function activateBtn(){
+        document.getElementById('submit-btn').disabled = false;
+    }
+
+    function submitAnswer(){
+        const questionId = document.getElementsByName('question_id')[0].value;
+        var radioButtons = document.getElementsByName('option');
+        for (let i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].checked) {
+                var selectedValue = radioButtons[i].value;
+            }
+        }
+        data = {
+            question_id: questionId,
+            option_id: selectedValue
+        };
+        sendData(data);
+    }
+
+    function sendData(data) {
+    if (socket.readyState === WebSocket.OPEN) {
+        data = JSON.stringify(data)
+        socket.send(data);
+    } else {
+        console.error('WebSocket connection is not open.');
+    }
+}
+</script>
+{% endblock main_content %}

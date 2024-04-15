@@ -1,0 +1,46 @@
+{% extends "public/base.html" %}
+{% block main_content %}
+<div class="container">
+    <h3 class="my-3">Live Quizes</h3>
+    <div class="list-group list-group-checkable d-grid gap-2 border-0">
+        <div class="row">
+            {% for item in live_quizes %}
+            <div class="col-md-4 col-lg-3 my-2">
+                <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios1">
+                    {{item.title}}&nbsp;
+                    <span class="badge text-bg-success rounded-pill">Live</span>
+                    <span class="d-block small opacity-50">Time: {{item.time}} min.</span>
+                    <span class="badge bg-info-subtle text-info-emphasis rounded-pill">Quiz Code: {{item.code}}</span>
+                    <button class="btn btn-sm btn-primary d-block w-100 mt-3" onclick="getName('{{item.code|escapejs}}')">Start Quiz</button>
+                </label>
+            </div>
+            {% empty %}
+            <p class="text-muted">No live quiz at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <h3 class="my-3">Inactive Quizes</h3>
+    <div class="list-group list-group-checkable d-grid gap-2 border-0">
+        <div class="row">
+            {% for item in inactive_quizes %}
+            <div class="col-md-4 col-lg-3 my-2">
+                <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios1">
+                    {{item.title}}&nbsp;
+                    <span class="d-block small opacity-50">Time: {{item.time}} min.</span>
+                    <span class="badge bg-info-subtle text-info-emphasis rounded-pill">Quiz Code: {{item.code}}</span>
+                </label>
+            </div>
+            {% empty %}
+            <p class="text-muted">No quiz available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+    function getName(code){
+        var name = prompt('Enter your name (without spaces): ');
+        var url = window.location.origin + '/quiz/' + code + '/?name=' + name;
+        window.location.href = url;
+    }
+</script>
+{% endblock main_content %}

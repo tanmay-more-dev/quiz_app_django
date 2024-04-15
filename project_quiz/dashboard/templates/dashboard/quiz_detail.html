@@ -1,0 +1,35 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+<div class="container">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb my-3">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Home</a></li>
+          <li class="breadcrumb-item active">Quiz ({{quiz.code}})</li>
+        </ol>
+    </nav>
+    <h3 class="my-3">{{quiz.title}}</h3>
+    <span class="badge text-bg-success">Code: {{quiz.code}}</span>
+    <span class="badge text-bg-warning">Time: {{quiz.time}} Min.</span>
+    {% if quiz.is_active %}
+        <span class="badge text-bg-danger">Live</span>
+    {% endif %}
+
+    <p class="text-end my-0 py-0"><a href="{% url 'dashboard:question_create' quiz.code %}" class="btn btn-sm btn-primary">Add Question</a></p>
+    <div class="card my-2 p-3">
+        <h4>Questions</h4>
+        <small class="text-muted">Total: {{questions.count}}</small>
+        <hr>
+        {% for item in questions %}
+            <p><strong>{{forloop.counter}}. {{item.question}}</strong><a href="{% url 'dashboard:question_delete' quiz.code item.id %}">delete</a></p>
+            <ul>
+                {% for option in item.option_set.all %}
+                <li>{{option}}</li>
+                {% endfor %}
+            </ul>
+            {% for answer in item.answer_set.all %}
+            <p class="text-success">Answer: <strong>{{answer.answer}}</strong></p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock main_content %}

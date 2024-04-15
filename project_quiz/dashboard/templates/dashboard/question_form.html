@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+{% load crispy_forms_tags %}
+<div class="container">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb my-3">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'dashboard:quiz_detail' code %}">Quiz ({{code}})</a></li>
+          <li class="breadcrumb-item active">Question (New)</li>
+        </ol>
+    </nav>
+    <h3 class="my-3">Create New Quiz</h3>
+    <div class="card my-3 p-3">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row my-2">
+                <div class="col">{{form.question|as_crispy_field}}</div>
+            </div>
+            <div class="row"><div class="col">{{form.option_one|as_crispy_field}}</div><div class="col">{{form.option_two|as_crispy_field}}</div></div>
+            <div class="row my-2"><div class="col">{{form.option_three|as_crispy_field}}</div><div class="col">{{form.option_four|as_crispy_field}}</div></div>
+            <div class="text-end">
+                <a href="{% url 'dashboard:quiz_detail' code %}" class="btn btn-secondary">Cancel</a>
+                <input class="btn btn-primary my-3" type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock main_content %}

@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+<!-- Modal -->
+<div class="container mt-5">
+    <div class="modal fade show my-5" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: block; margin-top: 150px !important;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete <strong>'{{object_to_delete}}'</strong>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Close</a>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-danger" value="Confirm Delete">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main_content %}

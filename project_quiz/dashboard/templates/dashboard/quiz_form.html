@@ -1,0 +1,35 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+{% load crispy_forms_tags %}
+<div class="container">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb my-3">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Home</a></li>
+          <li class="breadcrumb-item active">Quiz (New)</li>
+        </ol>
+    </nav>
+    <h3 class="my-3">Create New Quiz</h3>
+    <div class="card my-3 p-3">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">{{form.title|as_crispy_field}}</div>
+                <div class="col">{{form.time|as_crispy_field}}</div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col">{{form.code|as_crispy_field}}</div>
+                <div class="col">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="{{form.is_active.name}}" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Is Active</label>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end">
+                <a href="{% url 'dashboard:home' %}" class="btn btn-secondary">Cancel</a>
+                <input class="btn btn-primary my-3" type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock main_content %}

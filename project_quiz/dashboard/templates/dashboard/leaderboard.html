@@ -1,0 +1,97 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+<div class="container p-3">
+    <div id="message-box" class="text-capitalize"></div>
+    <div class="my-2">
+        <span class="badge text-bg-primary">Code: {{quiz.code}}</span>
+        <span class="badge text-bg-primary">Time: {{quiz.time}} min.</span>
+        <span class="badge text-bg-danger">{% if quiz.is_active %}Live{% else %}Quiz Inactive{% endif %}</span>
+    </div>
+    <table class="table text-capitalize" id="main-table">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Answered</th>
+                <th>Correct</th>
+                <th>Incorrect</th>
+            </tr>
+        </thead>
+        <tbody id="score-table">
+            <tr>
+            <td colspan="4" class="text-center">Score will be updated soon.</td>
+            </tr>
+        </tbody>
+      </table>
+</div>
+<script>
+    var quiz_code = '{{ quiz.code|escapejs }}';
+    var url = 'ws://'+window.location.host+'/ws/quiz/'+quiz_code+'/leaderboard/live/';
+    // Establish WebSocket connection
+    const socket = new WebSocket(url);
+
+    // // // Event listener for when the connection is open
+    // socket.addEventListener('open', function (event) {
+    // });
+
+    socket.addEventListener('close', function (event) {
+        alert('Connection closed. Quiz must be over. If not, refresh the page.');
+    });
+
+    socket.addEventListener('error', function (event) {
+        alert('Connection Error: ', event);
+    });
+    
+    // // Event listener for when a message is received from the server
+    socket.addEventListener('message', function (event) {
+        data = JSON.parse(event.data);
+        renderMessage(data);
+    });
+
+    // // Function to render the received message
+    function renderMessage(message) {
+        if(message.hasOwnProperty('message')){
+            const messageContainer = document.getElementById('message-box');
+            msg = '<div class="alert alert-info" role="alert">'+message.message+'</div>';
+            messageContainer.innerHTML = msg;
+        }else if(message.hasOwnProperty('score')){
+            tableData = '';
+            for (const key in message.score){
+                if(message.score.hasOwnProperty(key)){
+                    tableData += `<tr><td>${key}</td>`;
+                        for(const innerKey in message.score[key]){
+                            tableData += `<td>${message.score[key][innerKey]}</td>`;
+                        }
+                        tableData += '</tr>';
+                    }
+            }
+            const boardContainer = document.getElementById('score-table');
+            boardContainer.innerHTML = tableData;
+            sortTable();
+
+        }
+    }
+
+    function sortTable() {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("main-table");
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[2];
+            y = rows[i + 1].getElementsByTagName("TD")[2];
+            if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                shouldSwitch = true;
+                break;
+            }
+            }
+            if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            }
+        }
+    }
+</script>
+{% endblock main_content %}
