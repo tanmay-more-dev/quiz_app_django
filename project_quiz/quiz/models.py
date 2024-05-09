@@ -90,7 +90,6 @@ def quiz_timer(count, code):
     quiz.save()
     chl = get_channel_layer()
     leaderboard = cache.get("%s_leader_board_channel" % code)
-    print(leaderboard)
     try:
         async_to_sync(chl.group_send)(
             code, {'type': 'message_group', 'message': 'Time Up. Quiz Over.'})
@@ -122,7 +121,6 @@ def quiz_timer(count, code):
                 correct = True
             else:
                 correct = False
-            print(correct)
             list_obj.append(QuizResult(
                 name=name, quiz=quiz, question=que_list.get(id=key),
                 answer=opt_list.get(id=value), is_correct=correct))

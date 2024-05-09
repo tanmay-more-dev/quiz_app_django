@@ -1,17 +1,18 @@
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (ListView, TemplateView, DetailView,
                                   CreateView, DeleteView)
+from django.contrib.auth.mixins import LoginRequiredMixin
 from quiz.models import Quiz, Question
 from .forms import QuestionForm
 
 
-class HomeView(ListView):
+class HomeView(LoginRequiredMixin, ListView):
     model = Quiz
     template_name = "dashboard/home.html"
     context_object_name = "quizes"
 
 
-class QuestionDeleteView(DeleteView):
+class QuestionDeleteView(LoginRequiredMixin, DeleteView):
     model = Question
     template_name = "dashboard/confirm_delete.html"
     success_url = reverse_lazy('dashboard:home')
@@ -23,7 +24,7 @@ class QuestionDeleteView(DeleteView):
         })
 
 
-class QuestionCreateView(CreateView):
+class QuestionCreateView(LoginRequiredMixin, CreateView):
     model = Question
     form_class = QuestionForm
     template_name = "dashboard/question_form.html"
@@ -44,14 +45,14 @@ class QuestionCreateView(CreateView):
         return context
 
 
-class QuizCreateView(CreateView):
+class QuizCreateView(LoginRequiredMixin, CreateView):
     model = Quiz
     fields = '__all__'
     template_name = "dashboard/quiz_form.html"
     success_url = reverse_lazy('dashboard:home')
 
 
-class QuizDetailView(DetailView):
+class QuizDetailView(LoginRequiredMixin, DetailView):
     model = Quiz
     template_name = "dashboard/quiz_detail.html"
     context_object_name = "quiz"
@@ -67,7 +68,7 @@ class QuizDetailView(DetailView):
         return context
 
 
-class LeaderBoardView(TemplateView):
+class LeaderBoardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/leaderboard.html"
 
     def get_context_data(self, **kwargs) -> dict:

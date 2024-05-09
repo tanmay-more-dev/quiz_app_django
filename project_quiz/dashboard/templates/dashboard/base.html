@@ -10,10 +10,14 @@
   <body>
     <header class="p-3 text-bg-dark">
         <div class="container-fluid">
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="{% url "dashboard:home" %}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                <h2>QuizYard</h2>
+          <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <a href="{% url 'dashboard:home' %}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <h2>QuizYard Dashboard</h2>
             </a>
+            <form action="{% url 'account:logout' %}" method="post">
+              {% csrf_token %}
+              <input class="btn btn-danger" type="submit" value="Logout">
+            </form>
           </div>
         </div>
       </header>
